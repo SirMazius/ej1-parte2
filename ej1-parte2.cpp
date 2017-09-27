@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-
+using namespace std;
 //EN LA ULTIMA PARTE PARA CAMBIAR EL TIPO DE FILTRO USAMOS LA TECLA F OK????
 
 
@@ -32,6 +32,7 @@ float ydiff = 0.0f;
 
 int g_Width = 500;                          // Ancho inicial de la ventana
 int g_Height = 500;                         // Altura incial de la ventana
+int light_selector = 0;
 
 											// Intensidad de la luz
 const GLfloat intensidadLuz[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -47,6 +48,7 @@ const GLfloat amplitudFoco = 10.0f; //grados
 
 int main(int argc, char *argv[])
 {
+	
 	glutInit(&argc, argv);
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(g_Width, g_Height);
@@ -138,6 +140,7 @@ bool init()
 	glClearColor(0.93f, 0.93f, 0.93f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LEQUAL);
 	glClearDepth(1.0f);
 
@@ -156,7 +159,7 @@ bool init()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, intensidadLuz);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, intensidadLuz);
 
-	glLightfv(GL_LIGHT2, GL_POSITION, luzDireccional);
+	glLightfv(GL_LIGHT2, GL_POSITION, luzLocal);
 	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, direccionFoco);
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, amplitudFoco);
 	glLightfv(GL_LIGHT2, GL_AMBIENT, intensidadLuz);
@@ -199,7 +202,16 @@ bool init()
 
 void display()
 {
-	y_se_hizo_la_luz ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
+	
+	
+	
+	/*if (y_se_hizo_la_luz)
+	{
+		glEnable(GL_LIGHT0);
+	}
+	else {
+		glDisable(GL_LIGHT0);
+	}*/
 	sombra ? glShadeModel(GL_SMOOTH) : glShadeModel(GL_FLAT);
 
 	GLfloat colorAmbient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -284,12 +296,18 @@ void keyboard(unsigned char key, int x, int y)
 		animation = !animation;
 		break;
 	case 'i': case 'I':
-		if (y_se_hizo_la_luz)
+		if (!y_se_hizo_la_luz)
 		{
-			y_se_hizo_la_luz = false;
+			y_se_hizo_la_luz = true;
+			//glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT0);
 		}
 		else {
-			y_se_hizo_la_luz = true;
+			y_se_hizo_la_luz = false;
+			//glDisable(GL_LIGHTING);
+			glDisable(GL_LIGHT0);
+			glDisable(GL_LIGHT1);
+			glDisable(GL_LIGHT2);
 		}
 		break;
 	case 's': case 'S':
@@ -300,6 +318,32 @@ void keyboard(unsigned char key, int x, int y)
 		else {
 			sombra = true;
 		}
+		break;
+	case 't': case 'T':
+		switch (light_selector)
+		{
+		case 0:
+			cout << light_selector << endl;
+			glEnable(GL_LIGHT0);
+			glDisable(GL_LIGHT1);
+			glDisable(GL_LIGHT2);
+			break;
+		case 1:
+			cout << light_selector << endl;
+			glEnable(GL_LIGHT1);
+			glDisable(GL_LIGHT0);
+			glDisable(GL_LIGHT2);
+			break;
+		case 2:
+			cout << light_selector << endl;
+			glEnable(GL_LIGHT2);
+			glDisable(GL_LIGHT0);
+			glDisable(GL_LIGHT1);
+			break;
+		}
+		light_selector++;
+		if (light_selector > 2)
+			light_selector = 0;
 		break;
 	}
 }
