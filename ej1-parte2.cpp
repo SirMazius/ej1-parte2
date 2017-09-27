@@ -134,7 +134,7 @@ void drawPlane()
 
 bool init()
 {
-	printf("ESTO EMPIEZA");
+
 	glClearColor(0.93f, 0.93f, 0.93f, 0.0f);
 
 	glEnable(GL_DEPTH_TEST);
