@@ -341,9 +341,7 @@ void keyboard(unsigned char key, int x, int y)
 			glDisable(GL_LIGHT1);
 			break;
 		}
-		light_selector++;
-		if (light_selector > 2)
-			light_selector = 0;
+		light_selector >= 2 ? light_selector = 0 : light_selector++;
 		break;
 	}
 }
