@@ -183,6 +183,7 @@ bool init()
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
+		
 		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
 		//				 GL_RGB,				// internal texture storage format
 		//				 tgaImage[0].imageWidth,   // texture width
@@ -199,6 +200,38 @@ bool init()
 	}
 	else
 	std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
+	//LA OTRA TEXTURA
+	//if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]))
+	//{
+	//	if (LoadTGAFile("stoneDiffuse.tga", &tgaImage[0])) {
+
+	//	}
+	//	else {
+	//		printf("CATASTROFE DE TEXTURAS DIOS SANTO");
+	//		return 0;
+	//	}
+	//	//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
+	//	glBindTexture(GL_TEXTURE_2D, textIds[0]);
+
+	//	std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
+
+	//	// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
+	//	//				 GL_RGB,				// internal texture storage format
+	//	//				 tgaImage[0].imageWidth,   // texture width
+	//	//				 tgaImage[0].imageHeight,	// texture height
+	//	//				 GL_RGB,				// pixel format
+	//	//				 GL_UNSIGNED_BYTE,		// color component format
+	//	//				 tgaImage[0].imageData);	// pointer to texture image
+
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	//}
+	//else
+	//	std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
 	
 
@@ -209,7 +242,7 @@ void display()
 {
 	
 	//glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textIds[0]);
+	
 	/*if (y_se_hizo_la_luz)
 	{
 		glEnable(GL_LIGHT0);
@@ -353,12 +386,19 @@ void keyboard(unsigned char key, int x, int y)
 			if (!text) {
 				text = true;
 				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, textIds[0]);
 			}
 			else {
 				text = false;
 				glDisable(GL_TEXTURE_2D);
 			}
 		break;
+		case '1':
+			glBindTexture(GL_TEXTURE_2D, textIds[0]);
+			break;
+		case '2':
+			glBindTexture(GL_TEXTURE_2D, textIds[1]);
+			break;
 	}
 }
 
