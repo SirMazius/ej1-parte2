@@ -24,6 +24,7 @@ bool mouseDown = false;
 bool animation = true;
 bool y_se_hizo_la_luz = true;
 bool sombra = true;
+bool text = true;
 
 float xrot = 0.0f;
 float yrot = 0.0f;
@@ -34,6 +35,8 @@ int g_Width = 500;                          // Ancho inicial de la ventana
 int g_Height = 500;                         // Altura incial de la ventana
 int light_selector = 0;
 
+
+GLuint textIds[2];
 											// Intensidad de la luz
 const GLfloat intensidadLuz[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 // Posición de la luz
@@ -141,6 +144,7 @@ bool init()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
 	glDepthFunc(GL_LEQUAL);
 	glClearDepth(1.0f);
 
@@ -166,36 +170,37 @@ bool init()
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, intensidadLuz);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, intensidadLuz);
 
-	/*
+	
 	// Inicializa Texturas
 	TGAFILE tgaImage[2];
-	GLuint textIds[2];
+
 	glGenTextures (2, textIds);
 	std::cout << "Cargando la textura stoneDiffuse.tga" << std::endl;
 	if ( LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]) )
 	{
-	glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
+		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
+		glBindTexture(GL_TEXTURE_2D, textIds[0]);
 
-	std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
-	// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
-	//				 GL_RGB,				// internal texture storage format
-	//				 tgaImage[0].imageWidth,   // texture width
-	//				 tgaImage[0].imageHeight,	// texture height
-	//				 GL_RGB,				// pixel format
-	//				 GL_UNSIGNED_BYTE,		// color component format
-	//				 tgaImage[0].imageData);	// pointer to texture image
+		std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
+		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
+		//				 GL_RGB,				// internal texture storage format
+		//				 tgaImage[0].imageWidth,   // texture width
+		//				 tgaImage[0].imageHeight,	// texture height
+		//				 GL_RGB,				// pixel format
+		//				 GL_UNSIGNED_BYTE,		// color component format
+		//				 tgaImage[0].imageData);	// pointer to texture image
 
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
 	else
 	std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	*/
+	
 
 	return true;
 }
@@ -203,8 +208,8 @@ bool init()
 void display()
 {
 	
-	
-	
+	//glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textIds[0]);
 	/*if (y_se_hizo_la_luz)
 	{
 		glEnable(GL_LIGHT0);
@@ -236,7 +241,7 @@ void display()
 	glColor4fv(colorBronzeDiff); // Color de los objetos geométricos predefinidos en la GLUT
 
 								 //drawBox();
-								 //drawPlane();
+								 drawPlane();
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, colorAmbient);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorBronzeDiff);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, colorBronzeSpec);
@@ -257,6 +262,7 @@ void display()
 
 	glPopMatrix();
 	glutSwapBuffers();
+	//glDisable(GL_TEXTURE_2D);
 }
 
 void resize(int w, int h)
@@ -342,6 +348,16 @@ void keyboard(unsigned char key, int x, int y)
 			break;
 		}
 		light_selector >= 2 ? light_selector = 0 : light_selector++;
+		break;
+		case 'x': case 'X':
+			if (!text) {
+				text = true;
+				glEnable(GL_TEXTURE_2D);
+			}
+			else {
+				text = false;
+				glDisable(GL_TEXTURE_2D);
+			}
 		break;
 	}
 }
