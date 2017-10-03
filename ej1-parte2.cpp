@@ -26,6 +26,8 @@ bool y_se_hizo_la_luz = true;
 bool sombra = true;
 bool text = true;
 bool replace = true;
+bool extension = true;
+bool mipmap = true;
 
 float xrot = 0.0f;
 float yrot = 0.0f;
@@ -128,10 +130,10 @@ void drawPlane()
 		for (int j = 0; j <= numDivisiones; j++)
 		{
 			float x = TAM * float(j) / numDivisiones - TAM / 2.0f;
-			// glTexCoord2f(x,y0);
+			glTexCoord2f(x,y0);
 			glNormal3f(0.0f, 0.0f, 1.0f);
 			glVertex3f(x, y0, 0.0f);
-			// glTexCoord2f(x,yf);
+			glTexCoord2f(x,yf);
 			glNormal3f(0.0f, 0.0f, 1.0f);
 			glVertex3f(x, yf, 0.0f);
 		}
@@ -177,6 +179,7 @@ bool init()
 
 
 	glGenTextures(2, textIds);
+
 	std::cout << "Cargando la textura stoneDiffuse.tga" << std::endl;
 	if (LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]))
 	{
@@ -185,15 +188,15 @@ bool init()
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
-		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
-		//				 GL_RGB,				// internal texture storage format
-		//				 tgaImage[0].imageWidth,   // texture width
-		//				 tgaImage[0].imageHeight,	// texture height
-		//				 GL_RGB,				// pixel format
-		//				 GL_UNSIGNED_BYTE,		// color component format
-		//				 tgaImage[0].imageData);	// pointer to texture image
+		gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
+			GL_RGB,				// internal texture storage format
+			tgaImage[0].imageWidth,   // texture width
+			tgaImage[0].imageHeight,	// texture height
+			GL_RGB,				// pixel format
+			GL_UNSIGNED_BYTE,		// color component format
+			tgaImage[0].imageData);	// pointer to texture image
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -202,20 +205,20 @@ bool init()
 	else
 		std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]))
+	if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]) && LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]))
 	{
 		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
 		glBindTexture(GL_TEXTURE_2D, textIds[1]);
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[1].imageWidth << "," << tgaImage[1].imageHeight << ")" << std::endl;
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
-		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
-		//				 GL_RGB,				// internal texture storage format
-		//				 tgaImage[0].imageWidth,   // texture width
-		//				 tgaImage[0].imageHeight,	// texture height
-		//				 GL_RGB,				// pixel format
-		//				 GL_UNSIGNED_BYTE,		// color component format
-		//				 tgaImage[0].imageData);	// pointer to texture image
+		 gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
+						 GL_RGB,				// internal texture storage format
+						 tgaImage[0].imageWidth,   // texture width
+						 tgaImage[0].imageHeight,	// texture height
+						 GL_RGB,				// pixel format
+						 GL_UNSIGNED_BYTE,		// color component format
+						 tgaImage[0].imageData);	// pointer to texture image
 
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -236,14 +239,6 @@ void display()
 
 	//glEnable(GL_TEXTURE_2D);
 	//glBindTexture(GL_TEXTURE_2D, textIds[1]);
-	/*if (y_se_hizo_la_luz)
-	{
-	glEnable(GL_LIGHT0);
-	}
-	else {
-	glDisable(GL_LIGHT0);
-	}*/
-	sombra ? glShadeModel(GL_SMOOTH) : glShadeModel(GL_FLAT);
 
 	GLfloat colorAmbient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	GLfloat colorBronzeDiff[4] = { 0.8f, 0.6f, 0.0f, 1.0f };
@@ -343,12 +338,15 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		break;
 	case 's': case 'S':
+		//sombra ? glShadeModel(GL_SMOOTH) : glShadeModel(GL_FLAT);
 		if (sombra)
 		{
 			sombra = false;
+			glShadeModel(GL_FLAT);
 		}
 		else {
 			sombra = true;
+			glShadeModel(GL_SMOOTH);
 		}
 		break;
 	case 't': case 'T':
@@ -396,6 +394,25 @@ void keyboard(unsigned char key, int x, int y)
 		else {
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			replace = false;
+		}
+		break;
+
+	case 'e': case 'E':
+		if (!extension) {
+			extension = true;
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		}
+		else {
+			extension = false;
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+
+	case 'j': case 'J':
+		if (!mipmap) {
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		}
 		break;
 
