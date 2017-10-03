@@ -37,6 +37,7 @@ float ydiff = 0.0f;
 int g_Width = 500;                          // Ancho inicial de la ventana
 int g_Height = 500;                         // Altura incial de la ventana
 int light_selector = 0;
+int map_selector = 0;
 
 
 GLuint textIds[2];
@@ -183,8 +184,7 @@ bool init()
 	std::cout << "Cargando la textura stoneDiffuse.tga" << std::endl;
 	if (LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]))
 	{
-		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
-		glBindTexture(GL_TEXTURE_2D, textIds[0]);
+	glBindTexture(GL_TEXTURE_2D, textIds[0]);
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
@@ -196,7 +196,7 @@ bool init()
 			GL_UNSIGNED_BYTE,		// color component format
 			tgaImage[0].imageData);	// pointer to texture image
 
-		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -205,20 +205,19 @@ bool init()
 	else
 		std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]) && LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]))
+	if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]))
 	{
-		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
 		glBindTexture(GL_TEXTURE_2D, textIds[1]);
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[1].imageWidth << "," << tgaImage[1].imageHeight << ")" << std::endl;
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
 		 gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
-						 GL_RGB,				// internal texture storage format
-						 tgaImage[0].imageWidth,   // texture width
-						 tgaImage[0].imageHeight,	// texture height
-						 GL_RGB,				// pixel format
+						 GL_RGBA,				// internal texture storage format
+						 tgaImage[1].imageWidth,   // texture width
+						 tgaImage[1].imageHeight,	// texture height
+						 GL_RGBA,				// pixel format
 						 GL_UNSIGNED_BYTE,		// color component format
-						 tgaImage[0].imageData);	// pointer to texture image
+						 tgaImage[1].imageData);	// pointer to texture image
 
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -236,10 +235,6 @@ bool init()
 
 void display()
 {
-
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, textIds[1]);
-
 	GLfloat colorAmbient[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	GLfloat colorBronzeDiff[4] = { 0.8f, 0.6f, 0.0f, 1.0f };
 	GLfloat colorBronzeSpec[4] = { 1.0f, 1.0f, 0.4f, 1.0f };
@@ -338,7 +333,6 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		break;
 	case 's': case 'S':
-		//sombra ? glShadeModel(GL_SMOOTH) : glShadeModel(GL_FLAT);
 		if (sombra)
 		{
 			sombra = false;
@@ -374,15 +368,12 @@ void keyboard(unsigned char key, int x, int y)
 		light_selector >= 2 ? light_selector = 0 : light_selector++;
 		break;
 	case 'x': case 'X':
-		if (text) {
-			text = false;
+		if (!text) {
+			text = true;
 			glEnable(GL_TEXTURE_2D);
-
-			glBindTexture(GL_TEXTURE_2D, textIds[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
 		}
 		else {
-			text = true;
+			text = false;
 			glDisable(GL_TEXTURE_2D);
 		}
 		break;
@@ -400,31 +391,45 @@ void keyboard(unsigned char key, int x, int y)
 	case 'e': case 'E':
 		if (!extension) {
 			extension = true;
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		}
-		else {
-			extension = false;
+			
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
+		else {
+			extension = false;
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		}
 
 	case 'j': case 'J':
-		if (!mipmap) {
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		switch (map_selector) {
+		case 0:
+			glBindTexture(GL_TEXTURE_2D, textIds[0]);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			cout << "0" << endl;
+			break;
+		case 1:
+			glBindTexture(GL_TEXTURE_2D, textIds[0]);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			cout << "1" << endl;
+			break;
+		case 2:
+			glBindTexture(GL_TEXTURE_2D, textIds[0]);
+		
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			cout << "2" << endl;
+			break;
 		}
+		map_selector >= 2 ? map_selector = 0 : map_selector++;
 		break;
 
 	case '1':
 		cout << "HOLA" << endl;
 		glBindTexture(GL_TEXTURE_2D, textIds[0]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
 		break;
 	case '2':
 		cout << "HOLA2" << endl;
 		glBindTexture(GL_TEXTURE_2D, textIds[1]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
 		break;
 	}
 }
