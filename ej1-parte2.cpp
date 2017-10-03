@@ -1,4 +1,4 @@
-// ej1-parte2.cpp: define el punto de entrada de la aplicación de consola.
+ï»¿// ej1-parte2.cpp: define el punto de entrada de la aplicaciï¿½n de consola.
 //
 
 #include "stdafx.h"
@@ -25,6 +25,7 @@ bool animation = true;
 bool y_se_hizo_la_luz = true;
 bool sombra = true;
 bool text = true;
+bool replace = true;
 
 float xrot = 0.0f;
 float yrot = 0.0f;
@@ -37,12 +38,13 @@ int light_selector = 0;
 
 
 GLuint textIds[2];
-											// Intensidad de la luz
+TGAFILE tgaImage[2];
+// Intensidad de la luz
 const GLfloat intensidadLuz[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-// Posición de la luz
+// Posiciï¿½n de la luz
 const GLfloat luzLocal[] = { 0.5f, 0.5f, 1.0f, 1.0f };
 const GLfloat luzDireccional[] = { 0.5f, 0.5f, 1.0f, 0.0f };
-// Dirección a la que apunta el foco
+// Direcciï¿½n a la que apunta el foco
 const GLfloat direccionFoco[] = { -0.5f, -0.5f, -4.0f }; // para que mire al centro escena dir =  -luzLocal - pos(lookat)
 														 // Amplitud del cono de luz del foco (en grados)
 const GLfloat amplitudFoco = 10.0f; //grados
@@ -51,7 +53,7 @@ const GLfloat amplitudFoco = 10.0f; //grados
 
 int main(int argc, char *argv[])
 {
-	
+
 	glutInit(&argc, argv);
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(g_Width, g_Height);
@@ -148,16 +150,16 @@ bool init()
 	glDepthFunc(GL_LEQUAL);
 	glClearDepth(1.0f);
 
-	
-	
+
+
 	glEnable(GL_LIGHT0);
-	
+
 	// Inicializa Luces
 	glLightfv(GL_LIGHT0, GL_POSITION, luzLocal);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, intensidadLuz);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, intensidadLuz);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, intensidadLuz);
-	
+
 	glLightfv(GL_LIGHT1, GL_POSITION, luzDireccional);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, intensidadLuz);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, intensidadLuz);
@@ -170,20 +172,19 @@ bool init()
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, intensidadLuz);
 	glLightfv(GL_LIGHT2, GL_SPECULAR, intensidadLuz);
 
-	
-	// Inicializa Texturas
-	TGAFILE tgaImage[2];
 
-	glGenTextures (2, textIds);
+	// Inicializa Texturas
+
+
+	glGenTextures(2, textIds);
 	std::cout << "Cargando la textura stoneDiffuse.tga" << std::endl;
-	if ( LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]) )
+	if (LoadTGAFile("stoneDiffuse.tga", &tgaImage[0]))
 	{
 		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
 		glBindTexture(GL_TEXTURE_2D, textIds[0]);
 
 		std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
-		
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
 		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
 		//				 GL_RGB,				// internal texture storage format
 		//				 tgaImage[0].imageWidth,   // texture width
@@ -192,63 +193,55 @@ bool init()
 		//				 GL_UNSIGNED_BYTE,		// color component format
 		//				 tgaImage[0].imageData);	// pointer to texture image
 
-		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
 	else
-	std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
-	//LA OTRA TEXTURA
-	//if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]))
-	//{
-	//	if (LoadTGAFile("stoneDiffuse.tga", &tgaImage[0])) {
+		std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	//	}
-	//	else {
-	//		printf("CATASTROFE DE TEXTURAS DIOS SANTO");
-	//		return 0;
-	//	}
-	//	//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
-	//	glBindTexture(GL_TEXTURE_2D, textIds[0]);
+	if (LoadTGAFile("metalSheetDiffuse.tga", &tgaImage[1]))
+	{
+		//glBindTexture(GL_TEXTURE_2D, TEXTURE_ID_STONE);
+		glBindTexture(GL_TEXTURE_2D, textIds[1]);
 
-	//	std::cout << "tamanyo (w,h) = (" << tgaImage[0].imageWidth << "," << tgaImage[0].imageHeight << ")" << std::endl;
-	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
+		std::cout << "tamanyo (w,h) = (" << tgaImage[1].imageWidth << "," << tgaImage[1].imageHeight << ")" << std::endl;
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
+		// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
+		//				 GL_RGB,				// internal texture storage format
+		//				 tgaImage[0].imageWidth,   // texture width
+		//				 tgaImage[0].imageHeight,	// texture height
+		//				 GL_RGB,				// pixel format
+		//				 GL_UNSIGNED_BYTE,		// color component format
+		//				 tgaImage[0].imageData);	// pointer to texture image
 
-	//	// gluBuild2DMipmaps(GL_TEXTURE_2D,			// texture to specify
-	//	//				 GL_RGB,				// internal texture storage format
-	//	//				 tgaImage[0].imageWidth,   // texture width
-	//	//				 tgaImage[0].imageHeight,	// texture height
-	//	//				 GL_RGB,				// pixel format
-	//	//				 GL_UNSIGNED_BYTE,		// color component format
-	//	//				 tgaImage[0].imageData);	// pointer to texture image
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	}
+	else
+		std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	//}
-	//else
-	//	std::cout << "Error al cargar la textura stoneDiffuse.tga" << std::endl;
 
-	
 
 	return true;
 }
 
 void display()
 {
-	
+
 	//glEnable(GL_TEXTURE_2D);
-	
+	//glBindTexture(GL_TEXTURE_2D, textIds[1]);
 	/*if (y_se_hizo_la_luz)
 	{
-		glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT0);
 	}
 	else {
-		glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHT0);
 	}*/
 	sombra ? glShadeModel(GL_SMOOTH) : glShadeModel(GL_FLAT);
 
@@ -271,16 +264,16 @@ void display()
 
 
 
-	glColor4fv(colorBronzeDiff); // Color de los objetos geométricos predefinidos en la GLUT
+	glColor4fv(colorBronzeDiff); // Color de los objetos geomï¿½tricos predefinidos en la GLUT
 
 								 //drawBox();
-								 drawPlane();
+	drawPlane();
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, colorAmbient);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorBronzeDiff);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, colorBronzeSpec);
 	glMaterialf(GL_FRONT, GL_SHININESS, material_Se);
-	
-	
+
+
 	//glMaterialfv(GL_FRONT, GL_SHININESS, colorBronzeSpec);
 	glutSolidTeapot(0.5f);
 	//glutWireTeapot(0.5f);
@@ -382,23 +375,40 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		light_selector >= 2 ? light_selector = 0 : light_selector++;
 		break;
-		case 'x': case 'X':
-			if (!text) {
-				text = true;
-				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D, textIds[0]);
-			}
-			else {
-				text = false;
-				glDisable(GL_TEXTURE_2D);
-			}
-		break;
-		case '1':
+	case 'x': case 'X':
+		if (text) {
+			text = false;
+			glEnable(GL_TEXTURE_2D);
+
 			glBindTexture(GL_TEXTURE_2D, textIds[0]);
-			break;
-		case '2':
-			glBindTexture(GL_TEXTURE_2D, textIds[1]);
-			break;
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
+		}
+		else {
+			text = true;
+			glDisable(GL_TEXTURE_2D);
+		}
+		break;
+	case 'm': case 'M':
+		if (!replace) {
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			replace = true;
+		}
+		else {
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			replace = false;
+		}
+		break;
+
+	case '1':
+		cout << "HOLA" << endl;
+		glBindTexture(GL_TEXTURE_2D, textIds[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tgaImage[0].imageWidth, tgaImage[0].imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, tgaImage[0].imageData);
+		break;
+	case '2':
+		cout << "HOLA2" << endl;
+		glBindTexture(GL_TEXTURE_2D, textIds[1]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tgaImage[1].imageWidth, tgaImage[1].imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, tgaImage[1].imageData);
+		break;
 	}
 }
 
